@@ -5,6 +5,7 @@ import Util.ImageUtil;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 /**
  * @program: Gobang
@@ -36,7 +37,7 @@ public class Board {
 
 
     public Icon init(){
-        bufferedImage = ImageUtil.scale("../../Images/ImgBoard.png",650,650);
+        bufferedImage = ImageUtil.scale("Images/ImgBoard.png",650,650);
         ImageIcon imageIcon = new ImageIcon(bufferedImage);
         gameListener.draw(imageIcon);
         for(int i = 0;i< 100;i++){
