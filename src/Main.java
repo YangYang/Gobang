@@ -1,3 +1,4 @@
+import Controller.BoardController;
 import Listener.GameListener;
 import View.Board;
 
@@ -12,22 +13,6 @@ import javax.swing.*;
 public class Main {
     public static void main(String []args){
         System.out.println("Hello World");
-        Board board = new Board(new GameListener() {
-            @Override
-            public void blackWin() {
-
-            }
-
-            @Override
-            public void whiteWin() {
-
-            }
-
-            @Override
-            public void draw(ImageIcon imageIcon) {
-
-            }
-        });
-        board.init();
+        BoardController boardController = new BoardController();
     }
 }

@@ -36,6 +36,13 @@ public class Board {
     }
 
 
+    /**
+     * @Description: 初始化一个棋盘
+     * @Param: []
+     * @return: javax.swing.Icon
+     * @Author: Yang Yang
+     * @Time: 21:38 2018/3/16
+     **/
     public Icon init(){
         bufferedImage = ImageUtil.scale("Images/ImgBoard.png",650,650);
         ImageIcon imageIcon = new ImageIcon(bufferedImage);
@@ -47,5 +54,12 @@ public class Board {
         }
         isBlack = true;
         return imageIcon;
+    }
+
+    public boolean addBlack(int x,int y){
+
+
+
+        return false;
     }
 }
