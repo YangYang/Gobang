@@ -166,7 +166,7 @@ public class BoardController  extends JFrame{
                 myData.setY(e.getX());
                 myData.setY(e.getY());
                 canPlay = false;
-
+                setChess(e.getX(),e.getY());
             }
         }
 
@@ -182,6 +182,21 @@ public class BoardController  extends JFrame{
 
         @Override
         public void mouseExited(MouseEvent e) {
+
+        }
+    }
+
+    /**
+     * @Description: 在棋盘上放置棋子
+     * @Param: [x, y]
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 23:47 2018/3/17
+     **/
+    private void setChess(int x, int y) {
+        if(stepCount++ % 2 == 0){
+
+        } else {
 
         }
     }
