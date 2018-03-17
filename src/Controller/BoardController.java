@@ -19,11 +19,13 @@ import java.awt.event.MouseListener;
  **/
 public class BoardController  extends JFrame{
     private Board board = new Board(new MyListener());
-
+    //jPanel 容器
     private JPanel jPanel = null;
+    //基础组件，需要置于容器内
     private JLabel jLabel = null;
+    //是否可以下棋
     private boolean canPlay;
-    //计算局数
+    //计算轮数
     private int count = 0;
     //步数计数
     private int stepCount = 0;
@@ -41,9 +43,7 @@ public class BoardController  extends JFrame{
         this.setLayout(null);
 
 
-        /**
-         * 添加一块棋盘
-         * */
+        //添加一块棋盘
         this.setLayout(null);
         jPanel = new JPanel();
         jLabel = new JLabel();
@@ -51,7 +51,7 @@ public class BoardController  extends JFrame{
 
         //设置菜单栏
         JMenuBar jMenuBar = new JMenuBar();
-        setJMenuBar(jMenuBar);
+        this.setJMenuBar(jMenuBar);
         JMenu settingMenu = new JMenu("功能");
         jMenuBar.add(settingMenu);
 
@@ -65,7 +65,6 @@ public class BoardController  extends JFrame{
 
         JMenu helpMenu = new JMenu("帮助");
         jMenuBar.add(helpMenu);
-
         JMenuItem helpItem = new JMenuItem("关于");
         helpMenu.add(helpItem);
 
@@ -105,6 +104,33 @@ public class BoardController  extends JFrame{
         this.setVisible(true);
         jPanel.addMouseListener(new MyMouseListener());
     }
+
+    /**
+     * @Description: 初始化棋盘
+     * @Param: []
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 8:41 2018/3/17
+     **/
+    public void init(){
+        board.init();
+        count ++;
+        stepCount = 0;
+        if((isServer && count % 2 == 1) || (!isServer && count % 2 == 0)){
+            canPlay = true;
+        } else {
+            canPlay = false;
+        }
+        if(count >= 1){
+            if(canPlay){
+               this.setTitle("轮到你下了");
+            } else {
+                this.setTitle("轮到对方下了");
+            }
+        }
+    }
+
+
 
     class MyListener implements GameListener{
 
@@ -149,6 +175,34 @@ public class BoardController  extends JFrame{
         @Override
         public void mouseExited(MouseEvent e) {
 
+        }
+    }
+
+    /**
+     * @Description:显示输赢方的结果
+     * @Param: [tag]
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 8:49 2018/3/17
+     **/
+    private void showResult(boolean tag){
+        if(tag){
+            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                    "黑方胜","游戏结束", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                    "白方胜","游戏结束", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        int option = JOptionPane.showConfirmDialog(BoardController.this.getContentPane(),
+                "是否重新开始一局？", "游戏提示", JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE, null);
+        switch (option) {
+            case JOptionPane.YES_NO_OPTION:
+                init();
+                break;
+            case JOptionPane.NO_OPTION:
+                System.exit(0);
         }
     }
 }
