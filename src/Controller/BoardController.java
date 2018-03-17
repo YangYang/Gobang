@@ -2,6 +2,7 @@ package Controller;
 
 import Listener.GameListener;
 import Mina.MinaUtil;
+import MyData.MyData;
 import View.Board;
 
 import javax.swing.*;
@@ -116,6 +117,7 @@ public class BoardController  extends JFrame{
         board.init();
         count ++;
         stepCount = 0;
+        //根据canPlay设置谁可以下，每局过后互换颜色
         if((isServer && count % 2 == 1) || (!isServer && count % 2 == 0)){
             canPlay = true;
         } else {
@@ -136,17 +138,17 @@ public class BoardController  extends JFrame{
 
         @Override
         public void blackWin() {
-
+            showResult(true);
         }
 
         @Override
         public void whiteWin() {
-
+            showResult(false);
         }
 
         @Override
         public void draw(ImageIcon imageIcon) {
-
+            jLabel.setIcon(imageIcon);
         }
     }
 
@@ -159,7 +161,13 @@ public class BoardController  extends JFrame{
 
         @Override
         public void mousePressed(MouseEvent e) {
+            if(canPlay){
+                MyData myData = new MyData();
+                myData.setY(e.getX());
+                myData.setY(e.getY());
+                canPlay = false;
 
+            }
         }
 
         @Override
