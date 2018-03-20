@@ -25,7 +25,7 @@ public class BoardController  extends JFrame{
     //基础组件，需要置于容器内
     private JLabel jLabel = null;
     //是否可以下棋
-    private boolean canPlay;
+    private boolean canPlay = true;
     //计算轮数
     private int count = 0;
     //步数计数
@@ -165,7 +165,7 @@ public class BoardController  extends JFrame{
                 MyData myData = new MyData();
                 myData.setY(e.getX());
                 myData.setY(e.getY());
-                canPlay = false;
+//                canPlay = false;
                 setChess(e.getX(),e.getY());
             }
         }
@@ -194,11 +194,12 @@ public class BoardController  extends JFrame{
      * @Time: 23:47 2018/3/17
      **/
     private void setChess(int x, int y) {
-        if(stepCount++ % 2 == 0){
-
-        } else {
-
-        }
+//        if(stepCount++ % 2 == 0){
+//
+//        } else {
+//
+//        }
+        board.addBlack(x,y);
     }
 
     /**
