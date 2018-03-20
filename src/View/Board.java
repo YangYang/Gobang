@@ -58,6 +58,13 @@ public class Board {
         return imageIcon;
     }
 
+    /**
+     * @Description: 显示一个黑色的棋子
+     * @Param: [x, y] 鼠标点击的坐标
+     * @return: boolean
+     * @Author: Yang Yang
+     * @Time: 16:24 2018/3/20
+     **/
     public boolean addBlack(int x,int y){
         Coord coord = getCoord(x,y);
         System.out.println("x = " + coord.getX());
@@ -77,12 +84,20 @@ public class Board {
 
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
-            chesses[coord.getY()][coord.getY()] = 1;
+            chesses[coord.getX()][coord.getY()] = 1;
+            isBlack = false;
             return true;
         }
         return false;
     }
 
+    /**
+     * @Description: 显示一个白色的棋子
+     * @Param: [x, y] 鼠标点击的坐标
+     * @return: boolean
+     * @Author: Yang Yang
+     * @Time: 16:24 2018/3/20
+     **/
     public boolean addWhite(int x,int y){
         Coord coord = getCoord(x,y);
         System.out.println("x = " + coord.getX());
@@ -103,6 +118,7 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = -1;
+            isBlack = true;
             return true;
         }
         return false;

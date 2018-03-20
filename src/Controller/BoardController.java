@@ -194,12 +194,16 @@ public class BoardController  extends JFrame{
      * @Time: 23:47 2018/3/17
      **/
     private void setChess(int x, int y) {
-//        if(stepCount++ % 2 == 0){
-//
-//        } else {
-//
-//        }
-        board.addBlack(x,y);
+        //stepCount为偶数时候是黑色下
+        if(stepCount % 2 == 0){
+            if(board.addBlack(x,y)){
+                stepCount++;
+            }
+        } else {
+            if(board.addWhite(x,y)){
+                stepCount++;
+            }
+        }
     }
 
     /**
