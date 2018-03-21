@@ -165,6 +165,7 @@ public class BoardController  extends JFrame{
                 MyData myData = new MyData();
                 myData.setY(e.getX());
                 myData.setY(e.getY());
+                // TODO
 //                canPlay = false;
                 setChess(e.getX(),e.getY());
             }
@@ -233,4 +234,6 @@ public class BoardController  extends JFrame{
                 System.exit(0);
         }
     }
+
+
 }

@@ -85,6 +85,7 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = 1;
+            checkWiner(coord,true);
             isBlack = false;
             return true;
         }
@@ -118,10 +119,154 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = -1;
+            checkWiner(coord,false);
             isBlack = true;
             return true;
         }
         return false;
+    }
+
+    /**
+     * @Description: 判断胜负
+     * @Param: [coord, color] coord 下棋位置，color true 黑棋 false 白棋
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 10:52 2018/3/21
+     **/
+    private void checkWiner(Coord coord,boolean color){
+
+        if(coord == null){
+            return ;
+        }
+        int type ;
+        if(color == true){
+            //黑棋
+            type = 1;
+        } else {
+            //白棋
+            type = -1;
+        }
+        int line = 0;
+
+        //水平方向
+        //往左
+        for(int x = coord.getX(),y = coord.getY();x >= 0;x--){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        line --;
+        //往右
+        for(int x = coord.getX(),y = coord.getY();x <= 18;x++){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        //判断胜负
+        if(line == 5){
+            if(type == 1){
+                gameListener.blackWin();
+            } else {
+                gameListener.whiteWin();
+            }
+            return ;
+        } else {
+            line = 0;
+        }
+
+        //垂直方向
+        //向上
+        for(int x = coord.getX(),y = coord.getY();y >= 0;y--){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        line --;
+        //向下
+        for(int x = coord.getX(),y = coord.getY();y <= 18;y++){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        //判断胜负
+        if(line == 5){
+            if(type == 1){
+                gameListener.blackWin();
+            } else {
+                gameListener.whiteWin();
+            }
+            return ;
+        } else {
+            line = 0;
+        }
+
+        //对角线
+        //左上
+        for(int x = coord.getX(),y = coord.getY();x >= 0 && y >= 0;y--,x--){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        line --;
+        //右下
+        for(int x = coord.getX(),y = coord.getY();x <= 18 && y <= 18 ;x++,y++){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        //判断胜负
+        if(line == 5){
+            if(type == 1){
+                gameListener.blackWin();
+            } else {
+                gameListener.whiteWin();
+            }
+            return ;
+        } else {
+            line = 0;
+        }
+
+        //右上
+        for(int x = coord.getX(),y = coord.getY();x <= 18 && y >= 0;y--,x++){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        line --;
+        //左下
+        for(int x = coord.getX(),y = coord.getY();x >= 0 && y <= 18 ;x--,y++){
+            if(chesses[x][y] == type){
+                line ++ ;
+            } else {
+                break;
+            }
+        }
+        //判断胜负
+        if(line == 5){
+            if(type == 1){
+                gameListener.blackWin();
+            } else {
+                gameListener.whiteWin();
+            }
+            return ;
+        } else {
+            line = 0;
+        }
+        return ;
     }
 
     /**
@@ -155,7 +300,7 @@ public class Board {
      * @Author: Yang Yang
      * @Time: 15:28 2018/3/20
      **/
-    private Coord getCoord(int x,int y){
+    Coord getCoord(int x,int y){
         Coord coord = new Coord();
         coord.setX((int)((x-15.75)/32.5));
         coord.setY((int)((y-21.75)/32.5));
