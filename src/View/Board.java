@@ -120,6 +120,7 @@ public class Board {
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = -1;
             checkWiner(coord,false);
+
             isBlack = true;
             return true;
         }

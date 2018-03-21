@@ -18,5 +18,5 @@ public interface SimpleMinaListener {
     /**
      * 上线
      * */
-    public void onLine(Object obj, IoSession ioSession);
+    public void onLine(String msg);
 }

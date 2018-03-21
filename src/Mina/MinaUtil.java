@@ -1,11 +1,13 @@
 package Mina;
 
 import MessageUtil.MessageFactory;
+import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +84,15 @@ public class MinaUtil {
             acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
         } else {
             //客户端
-
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    NioSocketConnector connector = new NioSocketConnector();
+//                    connector.setHandler(new MinaClientHandler());
+//                    connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
+//                    ConnectFuture future;
+//                }
+//            });
         }
     }
 
@@ -172,7 +182,7 @@ public class MinaUtil {
         public void sessionOpened(IoSession session) throws Exception {
             System.out.println(session.getId());
             System.out.println("sessionOpened");
-//            simpleListener.onLine("对方玩家("+ session.getRemoteAddress().toString().replaceAll("/","") +")已上线");
+            simpleMinaListener.onLine("对方玩家("+ session.getRemoteAddress().toString().replaceAll("/","") +")已上线");
         }
 
         /**
@@ -235,6 +245,7 @@ public class MinaUtil {
         @Override
         public void messageReceived(IoSession session, Object message) throws Exception {
 //            simpleListener.onReceive(message,session);
+            simpleMinaListener.onReceive(message,session);
             System.out.println(session.getId());
             System.out.println("messageReceived");
 

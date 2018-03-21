@@ -2,8 +2,11 @@ package Controller;
 
 import Listener.GameListener;
 import Mina.MinaUtil;
+import Mina.SimpleMinaListener;
 import MyData.MyData;
+import Util.Toolkit;
 import View.Board;
+import org.apache.mina.core.session.IoSession;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @program: Gobang
@@ -73,13 +78,13 @@ public class BoardController  extends JFrame{
         inviteOtherItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                inviteOther();
+                inviteOther();
             }
         });
         acceptInviteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                acceptInvite();
+                acceptInvite();
             }
         });
         exitItem.addActionListener(new ActionListener() {
@@ -104,6 +109,34 @@ public class BoardController  extends JFrame{
         this.add(jPanel);
         this.setVisible(true);
         jPanel.addMouseListener(new MyMouseListener());
+    }
+
+    private void  acceptInvite() {
+        String b = JOptionPane.showInputDialog("请输入邀请方IP地址：");
+        if (!Toolkit.ipCheck(b)){
+            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                    "IP地址格式错误" ,"接受邀请", JOptionPane.INFORMATION_MESSAGE);
+        }else {
+            isServer = false;
+            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(),false,b);
+            canPlay = false;
+            setTitle("轮到对方下了哦");
+        }
+    }
+
+    private void inviteOther() {
+        try {
+            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(),true, null);
+
+            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                    "你的IP地址为：" + InetAddress.getLocalHost().getHostAddress(), "邀请别人", JOptionPane.INFORMATION_MESSAGE);
+            isServer = true;
+            canPlay = true;
+            setTitle("轮到你下了");
+        } catch (Exception e) {
+            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                    "发生未知错误" ,"邀请别人", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**
@@ -166,7 +199,7 @@ public class BoardController  extends JFrame{
                 myData.setY(e.getX());
                 myData.setY(e.getY());
                 // TODO
-//                canPlay = false;
+                canPlay = false;
                 setChess(e.getX(),e.getY());
             }
         }
@@ -185,6 +218,24 @@ public class BoardController  extends JFrame{
         public void mouseExited(MouseEvent e) {
 
         }
+    }
+
+    class MySimppleMinaListener implements SimpleMinaListener{
+
+        @Override
+        public void onReceive(Object obj, IoSession ioSession) {
+            MyData myData = (MyData) obj;
+            setChess(myData.getX(), myData.getY());
+            canPlay = true;
+            setTitle("轮到你下了哦");
+        }
+
+        @Override
+        public void onLine(String msg) {
+            setTitle(msg);
+        }
+
+
     }
 
     /**
