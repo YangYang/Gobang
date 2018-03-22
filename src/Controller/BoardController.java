@@ -30,15 +30,17 @@ public class BoardController  extends JFrame{
     //基础组件，需要置于容器内
     private JLabel jLabel = null;
     //是否可以下棋
-    private boolean canPlay = true;
+    private boolean canPlay = false;
     //计算轮数
     private int count = 0;
     //步数计数
     private int stepCount = 0;
+    //房间名
+    private String roomName = null;
 
     //mina
     private MinaUtil minaUtil = null;
-    private boolean isServer = false;
+    private boolean isHost = false;
 
     public BoardController() {
         this.setTitle("联机对战五子棋");
@@ -112,33 +114,46 @@ public class BoardController  extends JFrame{
     }
 
     private void  acceptInvite() {
-        String b = JOptionPane.showInputDialog("请输入邀请方IP地址：");
-        if (!Toolkit.ipCheck(b)){
+        String b = JOptionPane.showInputDialog("请输入想要加入的房间名：");
+        if (b == null || b.equals("")){
             JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
-                    "IP地址格式错误" ,"接受邀请", JOptionPane.INFORMATION_MESSAGE);
+                    "房间名错误，请重新输入！" ,"接受邀请", JOptionPane.INFORMATION_MESSAGE);
         }else {
-            isServer = false;
-            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(),b);
+//            isServer = false;
+            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener());
+            //发送加入房间的请求
+            MyData myData = new MyData();
+            myData.setType(2);
+            myData.setRoomName(b);
+            minaUtil.sent(myData);
+            isHost = false;
             canPlay = false;
-            setTitle("轮到对方下了哦");
         }
     }
 
     private void inviteOther() {
         try {
-            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(), "127.0.0.1");
+            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener());
             String b = JOptionPane.showInputDialog("请输入您的房间名：");
-            //发送建立房间的请求
-            MyData myData = new MyData();
-            myData.setType(1);
-            myData.setRoomName(b);
-            minaUtil.sent(myData);
-            System.out.println(b);
+            if(b == null || b.equals("")){
+                JOptionPane.showMessageDialog(BoardController.this.getContentPane(),
+                        "房间名无效，请重新输入！","邀请别人",JOptionPane.INFORMATION_MESSAGE);
+                return ;
+            } else {
+                //发送建立房间的请求
+                roomName = b;
+                MyData myData = new MyData();
+                myData.setType(1);
+                myData.setRoomName(roomName);
+                minaUtil.sent(myData);
+                isHost = true;
+                canPlay = false;
+                System.out.println(b);
 //            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
 //                    "你的IP地址为：" + InetAddress.getLocalHost().getHostAddress(), "邀请别人", JOptionPane.INFORMATION_MESSAGE);
 //            isServer = true;
-//            canPlay = true;
-            setTitle("轮到你下了");
+                setTitle("等待加入……");
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
@@ -158,7 +173,7 @@ public class BoardController  extends JFrame{
         count ++;
         stepCount = 0;
         //根据canPlay设置谁可以下，每局过后互换颜色
-        if((isServer && count % 2 == 1) || (!isServer && count % 2 == 0)){
+        if((isHost && count % 2 == 0) || (!isHost && count % 2 == 1)){
             canPlay = true;
         } else {
             canPlay = false;
@@ -203,11 +218,13 @@ public class BoardController  extends JFrame{
         public void mousePressed(MouseEvent e) {
             if(canPlay){
                 MyData myData = new MyData();
-                myData.setY(e.getX());
+                myData.setX(e.getX());
                 myData.setY(e.getY());
-                // TODO
+                myData.setType(0);
+                myData.setRoomName(roomName);
                 canPlay = false;
                 setChess(e.getX(),e.getY());
+                minaUtil.sent(myData);
             }
         }
 
@@ -230,19 +247,52 @@ public class BoardController  extends JFrame{
     class MySimppleMinaListener implements SimpleMinaListener{
 
         @Override
-        public void onReceive(Object obj, IoSession ioSession) {
-            MyData myData = (MyData) obj;
-            setChess(myData.getX(), myData.getY());
-            canPlay = true;
-            setTitle("轮到你下了哦");
+        public void onReceive(Object obj, IoSession ioSession, int tag) {
+            switch (tag){
+                //1、2是服务器参数
+                case 0:
+                    if(canPlay){
+                        canPlay = false;
+                    } else {
+                        canPlay = true;
+                    }
+                    //下棋
+                    MyData myData = (MyData) obj;
+                    setChess(myData.getX(), myData.getY());
+
+                    break;
+                case 3:
+                    roomName = ((MyData) obj).getRoomName();
+                    if(getTitle().equals("等待加入……")){
+                        setTitle("对方已经上线，轮到你下了哦");
+                        canPlay = true;
+                    } else {
+                        if(canPlay){
+                            setTitle("轮到你下了哦");
+                        } else {
+                            setTitle("轮对方下了");
+                        }
+                    }
+                    break;
+                case -1:
+                    //错误
+                    JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                            "不能加入自己建立的房间" ,"邀请", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("不能加入自己的房间");
+                    break;
+                case -2:
+                    JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+                            "房间已满/不存在房间，请重新输入！" ,"邀请", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("该房间不存在！");
+                    break;
+            }
         }
 
         @Override
         public void onLine(String msg) {
             setTitle(msg);
+
         }
-
-
     }
 
     /**

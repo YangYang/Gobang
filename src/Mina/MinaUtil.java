@@ -1,6 +1,7 @@
 package Mina;
 
 import MessageUtil.MessageFactory;
+import MyData.MyData;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -68,7 +69,7 @@ public class MinaUtil {
     /**
      * 单例实现
      * */
-    private MinaUtil(SimpleMinaListener simpleMinaListener, String serverAddress) {
+    private MinaUtil(SimpleMinaListener simpleMinaListener) {
         this.isServer = isServer;
         this.serverAddress = serverAddress;
         this.simpleMinaListener = simpleMinaListener;
@@ -85,33 +86,22 @@ public class MinaUtil {
 //            acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
 //        } else {
         //客户端
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                NioSocketConnector connector = new NioSocketConnector();
-                connector.setHandler(new MinaClientHandler());
-                connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
-                ConnectFuture future;
-                future = connector.connect(new InetSocketAddress("127.0.0.1", 9123));
-                future.awaitUninterruptibly();
-                MinaUtil.this.session = future.getSession();
-            }
-        }).start();
-//        }
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+        NioSocketConnector connector = new NioSocketConnector();
+        connector.setHandler(new MinaClientHandler());
+        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
+        ConnectFuture future;
+        future = connector.connect(new InetSocketAddress("127.0.0.1", 9123));
+        future.awaitUninterruptibly();
+        MinaUtil.this.session = future.getSession();
     }
 
 
-    public static MinaUtil getInstance(SimpleMinaListener simpleMinaListener, String serverAddress){
-//        if(isServer){
-//            //是服务器
-//            if(minaUtilServer == null){
-//                minaUtilServer = new MinaUtil(simpleMinaListener,isServer,null);
-//            }
-//            return minaUtilServer;
-//        } else {
-        //是客户端
+    public static MinaUtil getInstance(SimpleMinaListener simpleMinaListener){
         if (minaUtilClient == null){
-            minaUtilClient = new MinaUtil(simpleMinaListener,serverAddress);
+            minaUtilClient = new MinaUtil(simpleMinaListener);
         }
         return minaUtilClient;
 //        }
@@ -138,107 +128,107 @@ public class MinaUtil {
 
 
 
-    /**
-     * @program: MinaClientTest
-     * @description: 服务器Handler，实现各种服务器消息的回调
-     * @author: Yang Yang
-     * @create: 2018-03-13 16:37
-     **/
-    public class MinaServerHandler extends IoHandlerAdapter {
-        /**
-         * @Description: 异常捕捉
-         * @Param: [session, cause]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:38 2018/3/13
-         **/
-        @Override
-        public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("messageCaught");
-            System.out.println(cause.getMessage());
-        }
-
-        /**
-         * @Description: 接受到消息的回调
-         * @Param: [session, message]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:38 2018/3/13
-         **/
-        @Override
-        public void messageReceived(IoSession session, Object message) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("messageReceived");
-        }
-
-        /**
-         * @Description: 发送消息
-         * @Param: [session, message]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:39 2018/3/13
-         **/
-        @Override
-        public void messageSent(IoSession session, Object message) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("messageSent");
-        }
-
-        /**
-         * @Description:打开Session
-         * @Param: [session]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:39 2018/3/13
-         **/
-        @Override
-        public void sessionOpened(IoSession session) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("sessionOpened");
-            simpleMinaListener.onLine("对方玩家("+ session.getRemoteAddress().toString().replaceAll("/","") +")已上线");
-        }
-
-        /**
-         * @Description: 关闭Session
-         * @Param: [session]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:39 2018/3/13
-         **/
-        @Override
-        public void sessionClosed(IoSession session) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("sessionClosed");
-        }
-
-        /**
-         * @Description:客户端空闲时回调
-         * @Param: [session, status]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:40 2018/3/13
-         **/
-        @Override
-        public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("sessionIdle");
-        }
-
-        /**
-         * @Description: session创建回调
-         * @Param: [session]
-         * @return: void
-         * @Author: Yang Yang
-         * @Time: 16:41 2018/3/13
-         **/
-        @Override
-        public void sessionCreated(IoSession session) throws Exception {
-            System.out.println(session.getId());
-            System.out.println("sessionCreated");
-//            sessions.add(session);
-        }
-    }
+//    /**
+//     * @program: MinaClientTest
+//     * @description: 服务器Handler，实现各种服务器消息的回调
+//     * @author: Yang Yang
+//     * @create: 2018-03-13 16:37
+//     **/
+//    public class MinaServerHandler extends IoHandlerAdapter {
+//        /**
+//         * @Description: 异常捕捉
+//         * @Param: [session, cause]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:38 2018/3/13
+//         **/
+//        @Override
+//        public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("messageCaught");
+//            System.out.println(cause.getMessage());
+//        }
+//
+//        /**
+//         * @Description: 接受到消息的回调
+//         * @Param: [session, message]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:38 2018/3/13
+//         **/
+//        @Override
+//        public void messageReceived(IoSession session, Object message) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("messageReceived");
+//        }
+//
+//        /**
+//         * @Description: 发送消息
+//         * @Param: [session, message]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:39 2018/3/13
+//         **/
+//        @Override
+//        public void messageSent(IoSession session, Object message) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("messageSent");
+//        }
+//
+//        /**
+//         * @Description:打开Session
+//         * @Param: [session]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:39 2018/3/13
+//         **/
+//        @Override
+//        public void sessionOpened(IoSession session) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("sessionOpened");
+//            simpleMinaListener.onLine("对方玩家("+ session.getRemoteAddress().toString().replaceAll("/","") +")已上线");
+//        }
+//
+//        /**
+//         * @Description: 关闭Session
+//         * @Param: [session]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:39 2018/3/13
+//         **/
+//        @Override
+//        public void sessionClosed(IoSession session) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("sessionClosed");
+//        }
+//
+//        /**
+//         * @Description:客户端空闲时回调
+//         * @Param: [session, status]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:40 2018/3/13
+//         **/
+//        @Override
+//        public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("sessionIdle");
+//        }
+//
+//        /**
+//         * @Description: session创建回调
+//         * @Param: [session]
+//         * @return: void
+//         * @Author: Yang Yang
+//         * @Time: 16:41 2018/3/13
+//         **/
+//        @Override
+//        public void sessionCreated(IoSession session) throws Exception {
+//            System.out.println(session.getId());
+//            System.out.println("sessionCreated");
+////            sessions.add(session);
+//        }
+//    }
 
 
 
@@ -259,7 +249,8 @@ public class MinaUtil {
         @Override
         public void messageReceived(IoSession session, Object message) throws Exception {
 //            simpleListener.onReceive(message,session);
-            simpleMinaListener.onReceive(message,session);
+            MyData myData = (MyData) message;
+            simpleMinaListener.onReceive(message,session,myData.getType());
             System.out.println(session.getId());
             System.out.println("messageReceived");
 
