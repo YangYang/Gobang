@@ -38,8 +38,10 @@ public class BoardController  extends JFrame{
     //房间名
     private String roomName = null;
 
+
     //mina
     private MinaUtil minaUtil = null;
+
     private boolean isHost = false;
 
     public BoardController() {
@@ -193,11 +195,15 @@ public class BoardController  extends JFrame{
 
         @Override
         public void blackWin() {
+            //TODO 发送请求
+
             showResult(true);
         }
 
         @Override
         public void whiteWin() {
+            //TODO 发送请求
+
             showResult(false);
         }
 
@@ -223,8 +229,9 @@ public class BoardController  extends JFrame{
                 myData.setType(0);
                 myData.setRoomName(roomName);
                 canPlay = false;
-                setChess(e.getX(),e.getY());
+                //必须先发，再下
                 minaUtil.sent(myData);
+                setChess(e.getX(),e.getY());
             }
         }
 
@@ -304,13 +311,13 @@ public class BoardController  extends JFrame{
      **/
     private void setChess(int x, int y) {
         //stepCount为偶数时候是黑色下
-        if(stepCount % 2 == 0){
-            if(board.addBlack(x,y)){
-                stepCount++;
+        if(stepCount++ % 2 == 0){
+            if(!board.addBlack(x,y)){
+                stepCount--;
             }
         } else {
-            if(board.addWhite(x,y)){
-                stepCount++;
+            if(!board.addWhite(x,y)){
+                stepCount --;
             }
         }
     }
@@ -342,6 +349,4 @@ public class BoardController  extends JFrame{
                 System.exit(0);
         }
     }
-
-
 }

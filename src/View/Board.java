@@ -85,8 +85,12 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = 1;
-            checkWiner(coord,true);
-            isBlack = false;
+            boolean tag = checkWiner(coord,true);
+            if(tag){
+                isBlack = true;
+            } else {
+                isBlack = false;
+            }
             return true;
         }
         return false;
@@ -119,9 +123,12 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = -1;
-            checkWiner(coord,false);
-
-            isBlack = true;
+            boolean tag = checkWiner(coord,false);
+            if(tag){
+                isBlack = false;
+            } else {
+                isBlack = true;
+            }
             return true;
         }
         return false;
@@ -134,10 +141,10 @@ public class Board {
      * @Author: Yang Yang
      * @Time: 10:52 2018/3/21
      **/
-    private void checkWiner(Coord coord,boolean color){
+    private boolean checkWiner(Coord coord,boolean color){
 
         if(coord == null){
-            return ;
+            return false;
         }
         int type ;
         if(color == true){
@@ -171,10 +178,11 @@ public class Board {
         if(line == 5){
             if(type == 1){
                 gameListener.blackWin();
+                return true;
             } else {
                 gameListener.whiteWin();
+                return true;
             }
-            return ;
         } else {
             line = 0;
         }
@@ -201,10 +209,11 @@ public class Board {
         if(line == 5){
             if(type == 1){
                 gameListener.blackWin();
+                return true;
             } else {
                 gameListener.whiteWin();
+                return true;
             }
-            return ;
         } else {
             line = 0;
         }
@@ -231,10 +240,11 @@ public class Board {
         if(line == 5){
             if(type == 1){
                 gameListener.blackWin();
+                return true;
             } else {
                 gameListener.whiteWin();
+                return true;
             }
-            return ;
         } else {
             line = 0;
         }
@@ -260,14 +270,15 @@ public class Board {
         if(line == 5){
             if(type == 1){
                 gameListener.blackWin();
+                return true;
             } else {
                 gameListener.whiteWin();
+                return true;
             }
-            return ;
         } else {
             line = 0;
         }
-        return ;
+        return false;
     }
 
     /**
