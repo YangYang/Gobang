@@ -259,13 +259,16 @@ public class BoardController  extends JFrame{
                 //1、2是服务器参数
                 case 0:
                     if(canPlay){
+                        setTitle("轮到对方下了");
                         canPlay = false;
                     } else {
+                        setTitle("轮到你下了哦");
                         canPlay = true;
                     }
                     //下棋
                     MyData myData = (MyData) obj;
-                    setChess(myData.getX(), myData.getY());
+                    //TODO 错误的逻辑
+                    setChess2View(myData.getX(), myData.getY());
 
                     break;
                 case 3:
@@ -314,10 +317,37 @@ public class BoardController  extends JFrame{
         if(stepCount++ % 2 == 0){
             if(!board.addBlack(x,y)){
                 stepCount--;
+            } else {
+                if(canPlay){
+                    setTitle("轮到你下了哦");
+                } else {
+                    setTitle("轮对方下了");
+                }
             }
         } else {
             if(!board.addWhite(x,y)){
                 stepCount --;
+            } else {
+                if(canPlay){
+                    setTitle("轮到你下了哦");
+                } else {
+                    setTitle("轮对方下了");
+                }
+            }
+        }
+    }
+
+    //TODO 错误的逻辑
+    private void setChess2View(int x,int y){
+        if(stepCount++ % 2 == 0){
+            if(!board.addBlack2View(x,y)){
+                stepCount--;
+            } else {
+            }
+        } else {
+            if(!board.addWhite2View(x,y)){
+                stepCount --;
+            } else {
             }
         }
     }
