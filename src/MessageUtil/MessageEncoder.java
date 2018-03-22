@@ -14,23 +14,20 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
  **/
 public class MessageEncoder implements ProtocolEncoder {
     @Override
-    public void encode(IoSession ioSession, Object o, ProtocolEncoderOutput protocolEncoderOutput) throws Exception {
-        if (o != null){
+    public void encode(IoSession ioSession, Object message, ProtocolEncoderOutput out) throws Exception {
 
-            MyData myData = (MyData)o;
+        if (message != null){
             IoBuffer ioBuffer;
             ioBuffer = IoBuffer.allocate(1024).setAutoExpand(true);
             ioBuffer.setAutoShrink(true);
             ioBuffer.setAutoExpand(true);
-            ioBuffer.putInt(myData.getX());
-            ioBuffer.putInt(myData.getY());
+            ioBuffer.putObject(message);
             ioBuffer.flip();
-            protocolEncoderOutput.write(ioBuffer);
+            out.write(ioBuffer);
         }
     }
 
     @Override
     public void dispose(IoSession ioSession) throws Exception {
-
     }
 }

@@ -118,7 +118,7 @@ public class BoardController  extends JFrame{
                     "IP地址格式错误" ,"接受邀请", JOptionPane.INFORMATION_MESSAGE);
         }else {
             isServer = false;
-            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(),false,b);
+            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(),b);
             canPlay = false;
             setTitle("轮到对方下了哦");
         }
@@ -126,14 +126,21 @@ public class BoardController  extends JFrame{
 
     private void inviteOther() {
         try {
-            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(),true, null);
-
-            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
-                    "你的IP地址为：" + InetAddress.getLocalHost().getHostAddress(), "邀请别人", JOptionPane.INFORMATION_MESSAGE);
-            isServer = true;
-            canPlay = true;
+            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener(), "127.0.0.1");
+            String b = JOptionPane.showInputDialog("请输入您的房间名：");
+            //发送建立房间的请求
+            MyData myData = new MyData();
+            myData.setType(1);
+            myData.setRoomName(b);
+            minaUtil.sent(myData);
+            System.out.println(b);
+//            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
+//                    "你的IP地址为：" + InetAddress.getLocalHost().getHostAddress(), "邀请别人", JOptionPane.INFORMATION_MESSAGE);
+//            isServer = true;
+//            canPlay = true;
             setTitle("轮到你下了");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
                     "发生未知错误" ,"邀请别人", JOptionPane.INFORMATION_MESSAGE);
         }

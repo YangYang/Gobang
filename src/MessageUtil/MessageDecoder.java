@@ -6,6 +6,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
+import java.nio.charset.Charset;
+
 /**
  * @program: MinaClientTest
  * @description: 对传输信息进行解密的类
@@ -14,12 +16,14 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
  **/
 public class MessageDecoder implements ProtocolDecoder {
 
+    private final Charset charset = Charset.forName("UTF-8");
+
     @Override
     public void decode(IoSession ioSession, IoBuffer ioBuffer, ProtocolDecoderOutput protocolDecoderOutput) throws Exception {
-        MyData myData = new MyData();
-        myData.setX(ioBuffer.getInt());
-        myData.setY(ioBuffer.getInt());
-        protocolDecoderOutput.write(myData);
+//        CharsetDecoder charsetDecoder = charset.newDecoder();
+//        String str = ioBuffer.getString(charsetDecoder);
+        Object obj = ioBuffer.getObject();
+        protocolDecoderOutput.write(obj);
     }
 
     @Override

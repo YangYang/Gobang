@@ -9,6 +9,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,52 +68,65 @@ public class MinaUtil {
     /**
      * 单例实现
      * */
-    private MinaUtil(SimpleMinaListener simpleMinaListener, Boolean isServer, String serverAddress) {
+    private MinaUtil(SimpleMinaListener simpleMinaListener, String serverAddress) {
         this.isServer = isServer;
         this.serverAddress = serverAddress;
         this.simpleMinaListener = simpleMinaListener;
-        if(isServer){
-            //服务端
-            if(acceptor == null){
-                //初次建立
-                //初始化NioProcessor，个数为CPU个数 + 1
-                acceptor = new NioSocketAcceptor(Runtime.getRuntime().availableProcessors() + 1);
+//        if(isServer){
+//            //服务端
+//            if(acceptor == null){
+//                //初次建立
+//                //初始化NioProcessor，个数为CPU个数 + 1
+//                acceptor = new NioSocketAcceptor(Runtime.getRuntime().availableProcessors() + 1);
+//            }
+//            acceptor.setReuseAddress(true);//主服务监听的端口可以重用
+//            acceptor.getSessionConfig().setReadBufferSize(8192);
+//            acceptor.setHandler(new MinaServerHandler());
+//            acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
+//        } else {
+        //客户端
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                NioSocketConnector connector = new NioSocketConnector();
+                connector.setHandler(new MinaClientHandler());
+                connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
+                ConnectFuture future;
+                future = connector.connect(new InetSocketAddress("127.0.0.1", 9123));
+                future.awaitUninterruptibly();
+                MinaUtil.this.session = future.getSession();
             }
-            acceptor.setReuseAddress(true);//主服务监听的端口可以重用
-            acceptor.getSessionConfig().setReadBufferSize(8192);
-            acceptor.setHandler(new MinaServerHandler());
-            acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
-        } else {
-            //客户端
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    NioSocketConnector connector = new NioSocketConnector();
-//                    connector.setHandler(new MinaClientHandler());
-//                    connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
-//                    ConnectFuture future;
-//                }
-//            });
-        }
+        }).start();
+//        }
     }
 
 
-    public static MinaUtil getInstance(SimpleMinaListener simpleMinaListener, Boolean isServer, String serverAddress){
-        if(isServer){
-            //是服务器
-            if(minaUtilServer == null){
-                minaUtilServer = new MinaUtil(simpleMinaListener,isServer,null);
-            }
-            return minaUtilServer;
-        } else {
-            //是客户端
-            if (minaUtilClient == null){
-                minaUtilClient = new MinaUtil(simpleMinaListener,isServer,serverAddress);
-            }
-            return minaUtilClient;
+    public static MinaUtil getInstance(SimpleMinaListener simpleMinaListener, String serverAddress){
+//        if(isServer){
+//            //是服务器
+//            if(minaUtilServer == null){
+//                minaUtilServer = new MinaUtil(simpleMinaListener,isServer,null);
+//            }
+//            return minaUtilServer;
+//        } else {
+        //是客户端
+        if (minaUtilClient == null){
+            minaUtilClient = new MinaUtil(simpleMinaListener,serverAddress);
         }
+        return minaUtilClient;
+//        }
     }
 
+
+    public boolean sent(Object object){
+        if(session.isConnected()){
+            session.write(object);
+            System.out.println("success");
+            return true;
+        }
+        System.out.println("failed");
+        return false;
+    }
 
 
 
