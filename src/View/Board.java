@@ -85,6 +85,7 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = 1;
+            //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
             boolean tag = checkWiner(coord,true);
             if(tag){
                 isBlack = true;
@@ -123,6 +124,7 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = -1;
+            //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
             boolean tag = checkWiner(coord,false);
             if(tag){
                 isBlack = false;
