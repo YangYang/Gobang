@@ -45,74 +45,7 @@ public class BoardController  extends JFrame{
     private boolean isHost = false;
 
     public BoardController() {
-        this.setTitle("联机对战五子棋");
-        this.setSize(new Dimension(650, 695));
-        this.setResizable(false);
-        this.setDefaultCloseOperation(3);
-        this.setLocationRelativeTo(null);
-        this.setLayout(null);
-
-
-        //添加一块棋盘
-        this.setLayout(null);
-        jPanel = new JPanel();
-        jLabel = new JLabel();
-        Icon icon = board.init();
-
-        //设置菜单栏
-        JMenuBar jMenuBar = new JMenuBar();
-        this.setJMenuBar(jMenuBar);
-        JMenu settingMenu = new JMenu("功能");
-        jMenuBar.add(settingMenu);
-
-        JMenuItem inviteOtherItem = new JMenuItem("邀请别人");
-        JMenuItem acceptInviteItem = new JMenuItem("接受邀请");
-        JMenuItem exitItem = new JMenuItem("退出");
-        settingMenu.add(inviteOtherItem);
-        settingMenu.add(acceptInviteItem);
-        settingMenu.add(exitItem);
-
-
-        JMenu helpMenu = new JMenu("帮助");
-        jMenuBar.add(helpMenu);
-        JMenuItem helpItem = new JMenuItem("关于");
-        helpMenu.add(helpItem);
-
-
-        inviteOtherItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                inviteOther();
-            }
-        });
-        acceptInviteItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                acceptInvite();
-            }
-        });
-        exitItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
-        helpItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                Icon authorIcon = new ImageIcon("zp.png");
-//                JOptionPane.showMessageDialog(ChessController.this.getContentPane(),"作者：张鹏（14级软件工程2班）\n邮箱：zhangpeng@imudges.com\n版本：1.1.1beta","关于",JOptionPane. PLAIN_MESSAGE,authorIcon);
-            }
-        });
-
-        jLabel.setIcon(icon);
-        jLabel.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());
-        jPanel.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());
-        jPanel.add(jLabel);
-        this.add(jPanel);
-        this.setVisible(true);
-        jPanel.addMouseListener(new MyMouseListener());
+        initLeaveRoom();
     }
 
     private void  acceptInvite() {
@@ -151,10 +84,9 @@ public class BoardController  extends JFrame{
                 isHost = true;
                 canPlay = false;
                 System.out.println(b);
-//            JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
-//                    "你的IP地址为：" + InetAddress.getLocalHost().getHostAddress(), "邀请别人", JOptionPane.INFORMATION_MESSAGE);
-//            isServer = true;
                 setTitle("等待加入……");
+                setLeaveRoomItem(true);
+                setJMenuItemAction(false);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -188,9 +120,6 @@ public class BoardController  extends JFrame{
             }
         }
     }
-
-
-
     class MyListener implements GameListener{
 
         @Override
@@ -231,6 +160,7 @@ public class BoardController  extends JFrame{
                 canPlay = false;
                 //必须先发，再下
                 minaUtil.sent(myData);
+                setTitle("轮到对方下了哦");
                 setChess(e.getX(),e.getY());
             }
         }
@@ -267,11 +197,13 @@ public class BoardController  extends JFrame{
                     }
                     //下棋
                     MyData myData = (MyData) obj;
-                    //TODO 错误的逻辑
-                    setChess2View(myData.getX(), myData.getY());
-
+                    setChess(myData.getX(), myData.getY());
                     break;
                 case 3:
+                    //上线通知
+                    //上线以后拒绝离开房间
+                    setJMenuItemAction(false);
+                    setLeaveRoomItem(false);
                     roomName = ((MyData) obj).getRoomName();
                     if(getTitle().equals("等待加入……")){
                         setTitle("对方已经上线，轮到你下了哦");
@@ -282,6 +214,26 @@ public class BoardController  extends JFrame{
                         } else {
                             setTitle("轮对方下了");
                         }
+                    }
+                    break;
+                case 4:
+                    //下线通知
+                    boolean state = isStay();
+                    MyData temp = new MyData();
+                    if(state){
+                        //留下
+                        temp.setRoomName(roomName);
+                        temp.setType(5);
+                        minaUtil.sent(temp);
+                        //TODO 做初始化操作
+                        initStayRoom();
+                    } else {
+                        //离开房间，但是不离开游戏
+                        temp.setRoomName(roomName);
+                        temp.setType(6);
+                        minaUtil.sent(temp);
+                        //TODO 做初始化操作
+                        initLeaveRoom();
                     }
                     break;
                 case -1:
@@ -301,7 +253,6 @@ public class BoardController  extends JFrame{
         @Override
         public void onLine(String msg) {
             setTitle(msg);
-
         }
     }
 
@@ -317,37 +268,10 @@ public class BoardController  extends JFrame{
         if(stepCount++ % 2 == 0){
             if(!board.addBlack(x,y)){
                 stepCount--;
-            } else {
-                if(canPlay){
-                    setTitle("轮到你下了哦");
-                } else {
-                    setTitle("轮对方下了");
-                }
             }
         } else {
             if(!board.addWhite(x,y)){
                 stepCount --;
-            } else {
-                if(canPlay){
-                    setTitle("轮到你下了哦");
-                } else {
-                    setTitle("轮对方下了");
-                }
-            }
-        }
-    }
-
-    //TODO 错误的逻辑
-    private void setChess2View(int x,int y){
-        if(stepCount++ % 2 == 0){
-            if(!board.addBlack2View(x,y)){
-                stepCount--;
-            } else {
-            }
-        } else {
-            if(!board.addWhite2View(x,y)){
-                stepCount --;
-            } else {
             }
         }
     }
@@ -378,5 +302,223 @@ public class BoardController  extends JFrame{
             case JOptionPane.NO_OPTION:
                 System.exit(0);
         }
+    }
+    /**
+     * @Description: 显示是否留在房间的Dialog
+     * @Param: []
+     * @return: boolean
+     * @Author: Yang Yang
+     * @Time: 21:05 2018/3/23
+     **/
+    private boolean isStay(){
+        int option = JOptionPane.showConfirmDialog(BoardController.this.getContentPane(),
+                "对方已下线，是否要留在房间？","系统消息", JOptionPane.YES_NO_OPTION);
+        switch (option){
+            case JOptionPane.YES_OPTION:
+                //呆在房间
+                return true;
+            case JOptionPane.NO_OPTION:
+                //离开房间，不离开游戏
+                return false;
+        }
+        return false;
+    }
+
+    private void initStayRoom(){
+        setTitle("等待加入……");
+        this.setSize(new Dimension(650, 695));
+        this.setResizable(false);
+        this.setDefaultCloseOperation(3);
+        this.setLocationRelativeTo(null);
+        this.setLayout(null);
+
+
+        //添加一块棋盘
+        this.setLayout(null);
+        jPanel = new JPanel();
+        jLabel = new JLabel();
+        Icon icon = board.init();
+
+        //设置菜单栏
+        JMenuBar jMenuBar = new JMenuBar();
+        this.setJMenuBar(jMenuBar);
+        JMenu settingMenu = new JMenu("功能");
+        jMenuBar.add(settingMenu);
+
+        JMenuItem inviteOtherItem = new JMenuItem("创建房间");
+        JMenuItem acceptInviteItem = new JMenuItem("加入房间");
+        inviteOtherItem.setEnabled(false);
+        acceptInviteItem.setEnabled(false);
+        JMenuItem leaveRoom = new JMenuItem("离开房间");
+        leaveRoom.setEnabled(true);
+        JMenuItem exitItem = new JMenuItem("退出");
+        settingMenu.add(inviteOtherItem);
+        settingMenu.add(acceptInviteItem);
+        settingMenu.add(leaveRoom);
+        settingMenu.add(exitItem);
+
+
+        JMenu helpMenu = new JMenu("帮助");
+        jMenuBar.add(helpMenu);
+        JMenuItem helpItem = new JMenuItem("关于");
+        helpMenu.add(helpItem);
+
+
+        inviteOtherItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inviteOther();
+            }
+        });
+        acceptInviteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                acceptInvite();
+            }
+        });
+        exitItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        leaveRoom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                leaveRoomAction();
+            }
+        });
+
+        helpItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                Icon authorIcon = new ImageIcon("zp.png");
+//                JOptionPane.showMessageDialog(ChessController.this.getContentPane(),"作者：张鹏（14级软件工程2班）\n邮箱：zhangpeng@imudges.com\n版本：1.1.1beta","关于",JOptionPane. PLAIN_MESSAGE,authorIcon);
+            }
+        });
+
+        jLabel.setIcon(icon);
+        jLabel.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());
+        jPanel.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());
+        jPanel.add(jLabel);
+        this.add(jPanel);
+        this.setVisible(true);
+        jPanel.addMouseListener(new MyMouseListener());
+
+        isHost = true;
+        setTitle("等待加入……");
+    }
+
+    /**
+     * @Description: 留在房间的初始化工作，和刚进入游戏的初始化工作一致
+     * @Param: []
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 21:28 2018/3/23
+     **/
+    private void initLeaveRoom(){
+        this.setTitle("联机对战五子棋");
+        this.setSize(new Dimension(650, 695));
+        this.setResizable(false);
+        this.setDefaultCloseOperation(3);
+        this.setLocationRelativeTo(null);
+        this.setLayout(null);
+
+
+        //添加一块棋盘
+        this.setLayout(null);
+        jPanel = new JPanel();
+        jLabel = new JLabel();
+        Icon icon = board.init();
+
+        //设置菜单栏
+        JMenuBar jMenuBar = new JMenuBar();
+        this.setJMenuBar(jMenuBar);
+        JMenu settingMenu = new JMenu("功能");
+        jMenuBar.add(settingMenu);
+
+        JMenuItem inviteOtherItem = new JMenuItem("创建房间");
+        JMenuItem acceptInviteItem = new JMenuItem("加入房间");
+        JMenuItem leaveRoom = new JMenuItem("离开房间");
+        leaveRoom.setEnabled(false);
+        JMenuItem exitItem = new JMenuItem("退出");
+        settingMenu.add(inviteOtherItem);
+        settingMenu.add(acceptInviteItem);
+        settingMenu.add(leaveRoom);
+        settingMenu.add(exitItem);
+
+
+        JMenu helpMenu = new JMenu("帮助");
+        jMenuBar.add(helpMenu);
+        JMenuItem helpItem = new JMenuItem("关于");
+        helpMenu.add(helpItem);
+
+
+        inviteOtherItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inviteOther();
+            }
+        });
+        acceptInviteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                acceptInvite();
+            }
+        });
+        exitItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        leaveRoom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                leaveRoomAction();
+            }
+        });
+        helpItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                Icon authorIcon = new ImageIcon("zp.png");
+//                JOptionPane.showMessageDialog(ChessController.this.getContentPane(),"作者：张鹏（14级软件工程2班）\n邮箱：zhangpeng@imudges.com\n版本：1.1.1beta","关于",JOptionPane. PLAIN_MESSAGE,authorIcon);
+            }
+        });
+
+        jLabel.setIcon(icon);
+        jLabel.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());
+        jPanel.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());
+        jPanel.add(jLabel);
+        this.add(jPanel);
+        this.setVisible(true);
+        jPanel.addMouseListener(new MyMouseListener());
+    }
+
+    private void leaveRoomAction(){
+        setTitle("联机对战五子棋");
+        setLeaveRoomItem(false);
+        MyData myData = new MyData();
+        myData.setType(6);
+        myData.setRoomName(roomName);
+        minaUtil.sent(myData);
+        setJMenuItemAction(true);
+    }
+
+    private void setLeaveRoomItem(boolean tag){
+        JMenuBar jMenuBar = this.getJMenuBar();
+        JMenu menu = jMenuBar.getMenu(0);
+        JMenuItem menuItem = menu.getItem(2);
+        menuItem.setEnabled(tag);
+    }
+
+    private void setJMenuItemAction(boolean tag){
+        JMenuBar jMenuBar = this.getJMenuBar();
+        JMenu menu = jMenuBar.getMenu(0);
+        JMenuItem menuItem1 = menu.getItem(0);
+        JMenuItem menuItem2 = menu.getItem(1);
+        menuItem1.setEnabled(tag);
+        menuItem2.setEnabled(tag);
     }
 }

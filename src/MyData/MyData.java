@@ -13,6 +13,9 @@ public class MyData implements Serializable {
     private int y;
 
     /**
+     * 6 离开房间
+     * 5 留在房间
+     * 4 对方下线通知
      * 3 上线通知
      * 2 申请加入房间
      * 1 申请建立房间

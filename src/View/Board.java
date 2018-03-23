@@ -69,7 +69,7 @@ public class Board {
         Coord coord = getCoord(x,y);
         System.out.println("x = " + coord.getX());
         System.out.println("y = " + coord.getY());
-        if(chesses[coord.getX()][coord.getY()] == 0 && isBlack){
+        if(chesses[coord.getX()][coord.getY()] == 0 ){
             BufferedImage blackBufferedImage = ImageUtil.scale("Images/ImgBlack.png",Config.ChessSize,Config.ChessSize);//将图片缩放后加载到内存
             Graphics g = bufferedImage.getGraphics();
             // x,y 图像左上角坐标
@@ -86,12 +86,12 @@ public class Board {
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = 1;
             //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
-            boolean tag = checkWiner(coord,true);
-            if(tag){
-                isBlack = true;
-            } else {
-                isBlack = false;
-            }
+            checkWiner(coord,true);
+//            if(tag){
+//                isBlack = true;
+//            } else {
+//                isBlack = false;
+//            }
             return true;
         }
         return false;
@@ -136,7 +136,7 @@ public class Board {
         Coord coord = getCoord(x,y);
         System.out.println("x = " + coord.getX());
         System.out.println("y = " + coord.getY());
-        if(chesses[coord.getX()][coord.getY()] == 0 && !isBlack){
+        if(chesses[coord.getX()][coord.getY()] == 0){
             BufferedImage blackBufferedImage = ImageUtil.scale("Images/ImgWhite.png",Config.ChessSize,Config.ChessSize);//将图片缩放后加载到内存
             Graphics g = bufferedImage.getGraphics();
             // x,y 图像左上角坐标
@@ -153,12 +153,12 @@ public class Board {
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = -1;
             //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
-            boolean tag = checkWiner(coord,false);
-            if(tag){
-                isBlack = false;
-            } else {
-                isBlack = true;
-            }
+            checkWiner(coord,false);
+//            if(tag){
+//                isBlack = false;
+//            } else {
+//                isBlack = true;
+//            }
             return true;
         }
         return false;
