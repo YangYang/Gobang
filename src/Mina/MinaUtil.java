@@ -26,8 +26,8 @@ public class MinaUtil {
      * 客户端用
      * 服务器IP地址
      * */
+//    private static String serverAddress = "123.207.166.190";
     private static String serverAddress = "127.0.0.1";
-
     /**
      * 客户端使用
      * IoSession对象
@@ -49,13 +49,18 @@ public class MinaUtil {
      * */
     private MinaUtil(SimpleMinaListener simpleMinaListener) {
         this.simpleMinaListener = simpleMinaListener;
-        NioSocketConnector connector = new NioSocketConnector();
-        connector.setHandler(new MinaClientHandler());
-        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
-        ConnectFuture future;
-        future = connector.connect(new InetSocketAddress(serverAddress, 9123));
-        future.awaitUninterruptibly();
-        MinaUtil.this.session = future.getSession();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+                NioSocketConnector connector = new NioSocketConnector();
+                connector.setHandler(new MinaClientHandler());
+                connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MessageFactory()));
+                ConnectFuture future;
+                future = connector.connect(new InetSocketAddress(serverAddress, 9123));
+                future.awaitUninterruptibly();
+                MinaUtil.this.session = future.getSession();
+//            }
+//        }).start();
     }
 
 

@@ -99,7 +99,7 @@ public class BoardController  extends JFrame{
                 System.out.println(b);
                 setTitle("等待加入……");
                 setLeaveRoomItem(true);
-                setJMenuItemAction(false);
+                setJMenuItem(false);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -232,7 +232,8 @@ public class BoardController  extends JFrame{
                 case 3:
                     //上线通知
                     //上线以后拒绝离开房间
-                    setJMenuItemAction(false);
+                    setSurrenderItem(true);
+                    setJMenuItem(false);
                     setLeaveRoomItem(false);
                     roomName = ((MyData) obj).getRoomName();
                     if(getTitle().equals("等待加入……")){
@@ -382,14 +383,15 @@ public class BoardController  extends JFrame{
 
         JMenuItem inviteOtherItem = new JMenuItem("创建房间");
         JMenuItem acceptInviteItem = new JMenuItem("加入房间");
-        inviteOtherItem.setEnabled(false);
-        acceptInviteItem.setEnabled(false);
-        JMenuItem leaveRoom = new JMenuItem("离开房间");
-        leaveRoom.setEnabled(true);
+        JMenuItem leaveRoomItem = new JMenuItem("离开房间");
+        JMenuItem surrenderItem = new JMenuItem("投降");
+        leaveRoomItem.setEnabled(false);
+        surrenderItem.setEnabled(false);
         JMenuItem exitItem = new JMenuItem("退出");
         settingMenu.add(inviteOtherItem);
         settingMenu.add(acceptInviteItem);
-        settingMenu.add(leaveRoom);
+        settingMenu.add(leaveRoomItem);
+        settingMenu.add(surrenderItem);
         settingMenu.add(exitItem);
 
 
@@ -418,18 +420,25 @@ public class BoardController  extends JFrame{
             }
         });
 
-        leaveRoom.addActionListener(new ActionListener() {
+        leaveRoomItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 leaveRoomAction();
             }
         });
 
+        surrenderItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                surrenderAction();
+            }
+        });
+
         helpItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                Icon authorIcon = new ImageIcon("zp.png");
-//                JOptionPane.showMessageDialog(ChessController.this.getContentPane(),"作者：张鹏（14级软件工程2班）\n邮箱：zhangpeng@imudges.com\n版本：1.1.1beta","关于",JOptionPane. PLAIN_MESSAGE,authorIcon);
+                Icon authorIcon = new ImageIcon("Images/ImgYY.png");
+                JOptionPane.showMessageDialog(BoardController.this.getContentPane(),"作者：杨洋（2015级电子商务）\n邮箱：yangyangds@imudges.com\n版本：1.1.1beta","关于",JOptionPane.INFORMATION_MESSAGE,authorIcon);
             }
         });
 
@@ -474,12 +483,15 @@ public class BoardController  extends JFrame{
 
         JMenuItem inviteOtherItem = new JMenuItem("创建房间");
         JMenuItem acceptInviteItem = new JMenuItem("加入房间");
-        JMenuItem leaveRoom = new JMenuItem("离开房间");
-        leaveRoom.setEnabled(false);
+        JMenuItem leaveRoomItem = new JMenuItem("离开房间");
+        JMenuItem surrenderItem = new JMenuItem("投降");
+        leaveRoomItem.setEnabled(false);
+        surrenderItem.setEnabled(false);
         JMenuItem exitItem = new JMenuItem("退出");
         settingMenu.add(inviteOtherItem);
         settingMenu.add(acceptInviteItem);
-        settingMenu.add(leaveRoom);
+        settingMenu.add(leaveRoomItem);
+        settingMenu.add(surrenderItem);
         settingMenu.add(exitItem);
 
 
@@ -507,17 +519,23 @@ public class BoardController  extends JFrame{
                 System.exit(0);
             }
         });
-        leaveRoom.addActionListener(new ActionListener() {
+        leaveRoomItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 leaveRoomAction();
             }
         });
+        surrenderItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                surrenderAction();
+            }
+        });
         helpItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                Icon authorIcon = new ImageIcon("zp.png");
-//                JOptionPane.showMessageDialog(ChessController.this.getContentPane(),"作者：张鹏（14级软件工程2班）\n邮箱：zhangpeng@imudges.com\n版本：1.1.1beta","关于",JOptionPane. PLAIN_MESSAGE,authorIcon);
+                Icon authorIcon = new ImageIcon("Images/ImgYY.png");
+                JOptionPane.showMessageDialog(BoardController.this.getContentPane(),"作者：杨洋（2015级电子商务）\n邮箱：yangyangds@imudges.com\n版本：1.1.1beta","关于作者",JOptionPane.INFORMATION_MESSAGE,authorIcon);
             }
         });
 
@@ -544,7 +562,8 @@ public class BoardController  extends JFrame{
         myData.setType(6);
         myData.setRoomName(roomName);
         minaUtil.sent(myData);
-        setJMenuItemAction(true);
+        setJMenuItem(true);
+        setSurrenderItem(false);
     }
 
     /**
@@ -568,12 +587,28 @@ public class BoardController  extends JFrame{
      * @Author: Yang Yang
      * @Time: 9:22 2018/3/24
      **/
-    private void setJMenuItemAction(boolean tag){
+    private void setJMenuItem(boolean tag){
         JMenuBar jMenuBar = this.getJMenuBar();
         JMenu menu = jMenuBar.getMenu(0);
+        //创建房间
         JMenuItem menuItem1 = menu.getItem(0);
+        //加入房间
         JMenuItem menuItem2 = menu.getItem(1);
+
         menuItem1.setEnabled(tag);
         menuItem2.setEnabled(tag);
+    }
+
+    private void setSurrenderItem(boolean tag){
+        JMenuBar jMenuBar = this.getJMenuBar();
+        JMenu menu = jMenuBar.getMenu(0);
+        //投降
+        JMenuItem menuItem3 = menu.getItem(3);
+        menuItem3.setEnabled(tag);
+    }
+
+    //TODO
+    private void surrenderAction(){
+
     }
 }
