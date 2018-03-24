@@ -48,14 +48,20 @@ public class BoardController  extends JFrame{
         initLeaveRoom();
     }
 
+    /**
+     * @Description: 接受邀请的逻辑
+     * @Param: []
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 9:17 2018/3/24
+     **/
     private void  acceptInvite() {
         String b = JOptionPane.showInputDialog("请输入想要加入的房间名：");
         if (b == null || b.equals("")){
             JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
                     "房间名错误，请重新输入！" ,"接受邀请", JOptionPane.INFORMATION_MESSAGE);
         }else {
-//            isServer = false;
-            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener());
+            minaUtil = MinaUtil.getInstance(new MySimpleMinaListener());
             //发送加入房间的请求
             MyData myData = new MyData();
             myData.setType(2);
@@ -66,9 +72,16 @@ public class BoardController  extends JFrame{
         }
     }
 
+    /**
+     * @Description: 邀请按钮的逻辑
+     * @Param: []
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 9:17 2018/3/24
+     **/
     private void inviteOther() {
         try {
-            minaUtil = MinaUtil.getInstance(new MySimppleMinaListener());
+            minaUtil = MinaUtil.getInstance(new MySimpleMinaListener());
             String b = JOptionPane.showInputDialog("请输入您的房间名：");
             if(b == null || b.equals("")){
                 JOptionPane.showMessageDialog(BoardController.this.getContentPane(),
@@ -120,19 +133,23 @@ public class BoardController  extends JFrame{
             }
         }
     }
+
+
+    /**
+     * @program: Gobang
+     * @description: 实现游戏Listener
+     * @author: Yang Yang
+     * @create:
+     **/
     class MyListener implements GameListener{
 
         @Override
         public void blackWin() {
-            //TODO 发送请求
-
             showResult(true);
         }
 
         @Override
         public void whiteWin() {
-            //TODO 发送请求
-
             showResult(false);
         }
 
@@ -142,6 +159,13 @@ public class BoardController  extends JFrame{
         }
     }
 
+
+    /**
+     * @program: Gobang
+     * @description: 鼠标点击事件的Listener
+     * @author: Yang Yang
+     * @create:
+     **/
     class MyMouseListener implements MouseListener{
 
         @Override
@@ -181,7 +205,13 @@ public class BoardController  extends JFrame{
         }
     }
 
-    class MySimppleMinaListener implements SimpleMinaListener{
+    /**
+     * @program: Gobang
+     * @description: 简单Listener实现
+     * @author: Yang Yang
+     * @create:
+     **/
+    class MySimpleMinaListener implements SimpleMinaListener{
 
         @Override
         public void onReceive(Object obj, IoSession ioSession, int tag) {
@@ -225,14 +255,12 @@ public class BoardController  extends JFrame{
                         temp.setRoomName(roomName);
                         temp.setType(5);
                         minaUtil.sent(temp);
-                        //TODO 做初始化操作
                         initStayRoom();
                     } else {
                         //离开房间，但是不离开游戏
                         temp.setRoomName(roomName);
                         temp.setType(6);
                         minaUtil.sent(temp);
-                        //TODO 做初始化操作
                         initLeaveRoom();
                     }
                     break;
@@ -324,6 +352,13 @@ public class BoardController  extends JFrame{
         return false;
     }
 
+    /**
+     * @Description: 留在房间时候需要做的初始化工作
+     * @Param: []
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 9:19 2018/3/24
+     **/
     private void initStayRoom(){
         setTitle("等待加入……");
         this.setSize(new Dimension(650, 695));
@@ -405,13 +440,12 @@ public class BoardController  extends JFrame{
         this.add(jPanel);
         this.setVisible(true);
         jPanel.addMouseListener(new MyMouseListener());
-
         isHost = true;
         setTitle("等待加入……");
     }
 
     /**
-     * @Description: 留在房间的初始化工作，和刚进入游戏的初始化工作一致
+     * @Description: 离开房间时候需要做的初始化操作，和刚开始进入游戏时候相同
      * @Param: []
      * @return: void
      * @Author: Yang Yang
@@ -496,6 +530,13 @@ public class BoardController  extends JFrame{
         jPanel.addMouseListener(new MyMouseListener());
     }
 
+    /**
+     * @Description: 离开房间时的逻辑
+     * @Param: []
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 9:21 2018/3/24
+     **/
     private void leaveRoomAction(){
         setTitle("联机对战五子棋");
         setLeaveRoomItem(false);
@@ -506,6 +547,13 @@ public class BoardController  extends JFrame{
         setJMenuItemAction(true);
     }
 
+    /**
+     * @Description: 离开房间后对菜单栏的初始化
+     * @Param: [tag]
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 9:21 2018/3/24
+     **/
     private void setLeaveRoomItem(boolean tag){
         JMenuBar jMenuBar = this.getJMenuBar();
         JMenu menu = jMenuBar.getMenu(0);
@@ -513,6 +561,13 @@ public class BoardController  extends JFrame{
         menuItem.setEnabled(tag);
     }
 
+    /**
+     * @Description: 通用的设置Item的操作
+     * @Param: [tag]
+     * @return: void
+     * @Author: Yang Yang
+     * @Time: 9:22 2018/3/24
+     **/
     private void setJMenuItemAction(boolean tag){
         JMenuBar jMenuBar = this.getJMenuBar();
         JMenu menu = jMenuBar.getMenu(0);

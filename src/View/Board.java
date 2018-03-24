@@ -3,11 +3,9 @@ package View;
 import Config.Config;
 import Listener.GameListener;
 import Util.ImageUtil;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 /**
  * @program: Gobang
@@ -85,40 +83,6 @@ public class Board {
             ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
             gameListener.draw(imageIcon);
             chesses[coord.getX()][coord.getY()] = 1;
-            //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
-            checkWiner(coord,true);
-//            if(tag){
-//                isBlack = true;
-//            } else {
-//                isBlack = false;
-//            }
-            return true;
-        }
-        return false;
-    }
-
-    // TODO 错误的逻辑
-    public boolean addBlack2View(int x,int y){
-        Coord coord = getCoord(x,y);
-        System.out.println("x = " + coord.getX());
-        System.out.println("y = " + coord.getY());
-        if(chesses[coord.getX()][coord.getY()] == 0){
-            BufferedImage blackBufferedImage = ImageUtil.scale("Images/ImgBlack.png",Config.ChessSize,Config.ChessSize);//将图片缩放后加载到内存
-            Graphics g = bufferedImage.getGraphics();
-            // x,y 图像左上角坐标
-            g.drawImage(blackBufferedImage,(int)(coord.getX()*32.5 + 17),(int)(coord.getY()*32.5 + 17),null);
-            BufferedImage zxBufferedImage = ImageUtil.scale("Images/ImgCenter.png",Config.ChessSize,Config.ChessSize);
-
-            //画中心的十字
-            BufferedImage centerBufferedImage = new BufferedImage(bufferedImage.getWidth(),bufferedImage.getHeight(),bufferedImage.getType());
-            centerBufferedImage.setData(bufferedImage.getData());
-            g = centerBufferedImage.getGraphics();
-            g.drawImage(zxBufferedImage,(int)(coord.getX()*32.5 + 17),(int)(coord.getY()*32.5 + 17),null);
-
-            ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
-            gameListener.draw(imageIcon);
-            chesses[coord.getX()][coord.getY()] = 1;
-            //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
             checkWiner(coord,true);
             return true;
         }
@@ -154,39 +118,6 @@ public class Board {
             chesses[coord.getX()][coord.getY()] = -1;
             //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
             checkWiner(coord,false);
-//            if(tag){
-//                isBlack = false;
-//            } else {
-//                isBlack = true;
-//            }
-            return true;
-        }
-        return false;
-    }
-
-    //TODO 错误的逻辑
-    public boolean addWhite2View(int x,int y){
-        Coord coord = getCoord(x,y);
-        System.out.println("x = " + coord.getX());
-        System.out.println("y = " + coord.getY());
-        if(chesses[coord.getX()][coord.getY()] == 0){
-            BufferedImage blackBufferedImage = ImageUtil.scale("Images/ImgBlack.png",Config.ChessSize,Config.ChessSize);//将图片缩放后加载到内存
-            Graphics g = bufferedImage.getGraphics();
-            // x,y 图像左上角坐标
-            g.drawImage(blackBufferedImage,(int)(coord.getX()*32.5 + 17),(int)(coord.getY()*32.5 + 17),null);
-            BufferedImage zxBufferedImage = ImageUtil.scale("Images/ImgCenter.png",Config.ChessSize,Config.ChessSize);
-
-            //画中心的十字
-            BufferedImage centerBufferedImage = new BufferedImage(bufferedImage.getWidth(),bufferedImage.getHeight(),bufferedImage.getType());
-            centerBufferedImage.setData(bufferedImage.getData());
-            g = centerBufferedImage.getGraphics();
-            g.drawImage(zxBufferedImage,(int)(coord.getX()*32.5 + 17),(int)(coord.getY()*32.5 + 17),null);
-
-            ImageIcon imageIcon = new ImageIcon(centerBufferedImage);
-            gameListener.draw(imageIcon);
-            chesses[coord.getX()][coord.getY()] = 1;
-            //因为涉及到赢得比赛之后下一句第一个下棋的人，所以此处设置一个tag，查看是否检测成功。因为服务器发来的消息同时会出发这个函数，所以对白色方来说，最后一次addBlack，也就是黑色方赢以后，白色方的isBlack应该为true
-            checkWiner(coord,true);
             return true;
         }
         return false;

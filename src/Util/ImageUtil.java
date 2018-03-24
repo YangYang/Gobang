@@ -33,10 +33,6 @@ public class ImageUtil {
             Graphics g = tag.getGraphics();
             g.drawImage(image, 0, 0, null); // 绘制缩小后的图
             g.dispose();
-            //ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            //ImageIO.write(tag, "JPEG", baos);// 输出到文件流
-
-            //ImageIcon imageIcon = new ImageIcon(baos.toByteArray());
             return tag;
         } catch (IOException e) {
             e.printStackTrace();
