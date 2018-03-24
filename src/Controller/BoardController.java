@@ -128,8 +128,10 @@ public class BoardController  extends JFrame{
         if(count >= 1){
             if(canPlay){
                this.setTitle("轮到你下了");
+               setSurrenderItem(true);
             } else {
                 this.setTitle("轮到对方下了");
+                setSurrenderItem(false);
             }
         }
     }
@@ -220,9 +222,11 @@ public class BoardController  extends JFrame{
                 case 0:
                     if(canPlay){
                         setTitle("轮到对方下了");
+                        setSurrenderItem(false);
                         canPlay = false;
                     } else {
                         setTitle("轮到你下了哦");
+                        setSurrenderItem(true);
                         canPlay = true;
                     }
                     //下棋
@@ -238,12 +242,15 @@ public class BoardController  extends JFrame{
                     roomName = ((MyData) obj).getRoomName();
                     if(getTitle().equals("等待加入……")){
                         setTitle("对方已经上线，轮到你下了哦");
+                        setSurrenderItem(true);
                         canPlay = true;
                     } else {
                         if(canPlay){
                             setTitle("轮到你下了哦");
+                            setSurrenderItem(true);
                         } else {
                             setTitle("轮对方下了");
+                            setSurrenderItem(false);
                         }
                     }
                     break;
@@ -264,6 +271,10 @@ public class BoardController  extends JFrame{
                         minaUtil.sent(temp);
                         initLeaveRoom();
                     }
+                    break;
+                case 8:
+                    //对方投降
+                    surrenderAction();
                     break;
                 case -1:
                     //错误
@@ -430,7 +441,7 @@ public class BoardController  extends JFrame{
         surrenderItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                surrenderAction();
+                surrenderActionSend();
             }
         });
 
@@ -528,7 +539,7 @@ public class BoardController  extends JFrame{
         surrenderItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                surrenderAction();
+                surrenderActionSend();
             }
         });
         helpItem.addActionListener(new ActionListener() {
@@ -607,8 +618,31 @@ public class BoardController  extends JFrame{
         menuItem3.setEnabled(tag);
     }
 
-    //TODO
-    private void surrenderAction(){
+    private void surrenderActionSend(){
+        if(stepCount % 2 == 0){
+            //发送请求
+            MyData myData = new MyData();
+            myData.setRoomName(roomName);
+            myData.setType(7);
+            minaUtil.sent(myData);
+            //此时应该白色下，如果点了投降，就是白色投降
+            board.surrender(false);
+        } else {
+            //发送请求
+            MyData myData = new MyData();
+            myData.setRoomName(roomName);
+            myData.setType(7);
+            minaUtil.sent(myData);
+            //此时应该黑色下，如果点了投降，就是黑色投降
+            board.surrender(true);
+        }
+    }
 
+    private void surrenderAction(){
+        if(stepCount % 2 ==0 ){
+            board.surrender(false);
+        } else {
+            board.surrender(true);
+        }
     }
 }

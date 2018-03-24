@@ -307,5 +307,15 @@ public class Board {
         coord.setY((int)((y-21.75)/32.5));
         return  coord;
     }
+
+    public void surrender(boolean tag){
+        if(tag){
+            //黑色
+            gameListener.blackWin();
+        } else {
+            //白色
+            gameListener.whiteWin();
+        }
+    }
 }
 

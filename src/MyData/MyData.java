@@ -13,6 +13,8 @@ public class MyData implements Serializable {
     private int y;
 
     /**
+     * 8 对方投降（这一条是针对客户端的，也就是说服务器发给客户端）
+     * 7 发送请求方投降（这一条是针对服务器的，也就是说是客户端发送给服务器的）
      * 6 离开房间
      * 5 留在房间
      * 4 对方下线通知
