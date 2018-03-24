@@ -264,6 +264,8 @@ public class BoardController  extends JFrame{
                         temp.setType(5);
                         minaUtil.sent(temp);
                         initStayRoom();
+                        setJMenuItem(false);
+                        setLeaveRoomItem(true);
                     } else {
                         //离开房间，但是不离开游戏
                         temp.setRoomName(roomName);
@@ -276,11 +278,30 @@ public class BoardController  extends JFrame{
                     //对方投降
                     surrenderAction();
                     break;
+                case 9:
+                    //查询房间状态结果，表示对方在线
+                    int option = JOptionPane.showConfirmDialog(BoardController.this.getContentPane(),
+                            "是否重新开始一局？", "游戏提示", JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE, null);
+                    switch (option) {
+                        case JOptionPane.YES_NO_OPTION:
+                            init();
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            //离开房间逻辑
+                            System.exit(0);
+                    }
+                    break;
+
+                case 10:
+
+                    break;
                 case -1:
                     //错误
                     JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
                             "不能加入自己建立的房间" ,"邀请", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("不能加入自己的房间");
+                    canPlay = false;
                     break;
                 case -2:
                     JOptionPane.showInternalMessageDialog(BoardController.this.getContentPane(),
@@ -332,16 +353,14 @@ public class BoardController  extends JFrame{
                     "白方胜","游戏结束", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        int option = JOptionPane.showConfirmDialog(BoardController.this.getContentPane(),
-                "是否重新开始一局？", "游戏提示", JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE, null);
-        switch (option) {
-            case JOptionPane.YES_NO_OPTION:
-                init();
-                break;
-            case JOptionPane.NO_OPTION:
-                System.exit(0);
-        }
+        //先看看是否在线，
+
+        //TODO 下线广播一次；此处询问一次
+        //TODO 此处不应该发送请求
+        MyData myData = new MyData();
+        myData.setType(9);
+        myData.setRoomName(roomName);
+        minaUtil.sent(myData);
     }
     /**
      * @Description: 显示是否留在房间的Dialog
