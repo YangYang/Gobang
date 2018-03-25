@@ -354,9 +354,6 @@ public class BoardController  extends JFrame{
         }
 
         //先看看是否在线，
-
-        //TODO 下线广播一次；此处询问一次
-        //TODO 此处不应该发送请求
         MyData myData = new MyData();
         myData.setType(9);
         myData.setRoomName(roomName);
